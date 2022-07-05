@@ -2,7 +2,7 @@
 
 Flutter: 3.0.4
 
-![설치 가이드](https://flutter-ko.dev/docs/get-started/install/macos#update-your-path)
+[설치 가이드](https://flutter-ko.dev/docs/get-started/install/macos#update-your-path)
 
 ## Test
 
