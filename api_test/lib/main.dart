@@ -49,14 +49,15 @@ class _HomePageState extends State<HomePage> {
   String _password = '';
 
   _postUser() async {
-    final response = await http.post(Uri.parse('https://webhook.site/fe6742f5-29e3-41bf-96b7-2dd8aa2e3b59'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'id': _id,
-          'password': _password,
-        }));
+    final response =
+        await http.post(Uri.parse('http://localhost:8080/api/hello'),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({
+              'id': _id,
+              'password': _password,
+            }));
     if (response.statusCode == 200) {
       setState(() {
         result = "SignUp Success!";
