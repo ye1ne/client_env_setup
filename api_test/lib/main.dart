@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
 
   _postUser() async {
     final response =
-        await http.post(Uri.parse('http://localhost:8080/api/hello'),
+        await http.post(Uri.parse('http://localhost:8080/api/user'),
             headers: {
               'Content-Type': 'application/json',
             },
