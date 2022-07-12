@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }
@@ -34,7 +35,32 @@ class _HomePageState extends State<HomePage> {
         await http.get(Uri.parse('http://localhost:8080/api/hello'));
     if (response.statusCode == 200) {
       setState(() {
-        result = "Response Body: " + response.body;
+        result = "Response Body: ${response.body}";
+      });
+    } else {
+      setState(() {
+        result = "Request failed with status: ${response.statusCode}";
+      });
+    }
+  }
+
+  final _formKey = GlobalKey<FormState>();
+  String _id = '';
+  String _password = '';
+
+  _postUser() async {
+    final response =
+        await http.post(Uri.parse('http://localhost:8080/api/hello'),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({
+              'id': _id,
+              'password': _password,
+            }));
+    if (response.statusCode == 200) {
+      setState(() {
+        result = "SignUp Success!";
       });
     } else {
       setState(() {
@@ -58,7 +84,66 @@ class _HomePageState extends State<HomePage> {
                   _fetchText();
                 },
                 child: const Text('Call API')),
-            Text(result, style: TextStyle(color: Colors.black)),
+            Text(result, style: const TextStyle(color: Colors.black)),
+            Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.person),
+                      labelText: 'id',
+                    ),
+                    autovalidateMode: AutovalidateMode.always,
+                    onSaved: (value) {
+                      setState(() {
+                        _id = value as String;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.lock),
+                      labelText: 'Password',
+                    ),
+                    autovalidateMode: AutovalidateMode.always,
+                    onSaved: (value) {
+                      setState(() {
+                        _password = value as String;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        _postUser();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Sent id:$_id and password:$_password to server'),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text('submit'),
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),
